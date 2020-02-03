@@ -22,10 +22,11 @@ exports.makeRefObj = (list, key, value) => {
 
 exports.formatComments = (comments, articleRef) => {
   return comments.map(comment => {
-    comment.author = comment.created_by;
-    comment.article_id = articleRef[comment.belongs_to];
-    delete comment.belongs_to;
-    delete comment.created_by;
-    return comment;
+    const formattedComment = { ...comment };
+    formattedComment.author = comment.created_by;
+    formattedComment.article_id = articleRef[comment.belongs_to];
+    delete formattedComment.belongs_to;
+    delete formattedComment.created_by;
+    return formattedComment;
   });
 };

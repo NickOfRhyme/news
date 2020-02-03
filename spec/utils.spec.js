@@ -12,7 +12,7 @@ describe("formatDates", () => {
     const actual = formatDates(input);
     expect(actual).to.be.an("array");
   });
-  it("does not mutate original array", () => {
+  it("returns a new array", () => {
     const input = [];
     const actual = formatDates(input);
     const unexpected = input;
@@ -79,7 +79,7 @@ describe("formatComments", () => {
   it("returns an array", () => {
     expect(formatComments([])).to.be.an("array");
   });
-  it("does not mutate original array", () => {
+  it("does returns a new array", () => {
     const input = [];
     const actual = formatComments(input);
     const unexpected = input;
@@ -87,27 +87,44 @@ describe("formatComments", () => {
   });
   it("succesfully reformats a single comment", () => {
     const refObj = { what: "that" };
-    const input = [{ belongs_to: "what" }];
+    const input = [{ belongs_to: "what", created_by: "Jeff" }];
     const actual = formatComments(input, refObj);
-    const expected = [{ article_id: "that" }];
+    const expected = [{ article_id: "that", author: "Jeff" }];
     expect(actual).to.deep.equal(expected);
   });
   it("successfully reformats a series of comments", () => {
     const refObj = { "lots of text": 1, "very little text": 2 };
+    const input = [
+      { belongs_to: "lots of text", created_by: "Bob" },
+      { belongs_to: "lots of text", created_by: "Bob" },
+      { belongs_to: "very little text", created_by: "Bob" },
+      { belongs_to: "lots of text", created_by: "Bob" }
+    ];
+    const expected = [
+      { article_id: 1, author: "Bob" },
+      { article_id: 1, author: "Bob" },
+      { article_id: 2, author: "Bob" },
+      { article_id: 1, author: "Bob" }
+    ];
+    const actual = formatComments(input, refObj);
+
+    expect(actual).to.deep.equal(expected);
+  });
+  it("does not mutate original array or its contents", () => {
+    const refObj = { "lots of text": 1, "very little text": 2 };
+    const untouchedInput = [
+      { belongs_to: "lots of text" },
+      { belongs_to: "lots of text" },
+      { belongs_to: "very little text" },
+      { belongs_to: "lots of text" }
+    ];
     const input = [
       { belongs_to: "lots of text" },
       { belongs_to: "lots of text" },
       { belongs_to: "very little text" },
       { belongs_to: "lots of text" }
     ];
-    const expected = [
-      { article_id: 1 },
-      { article_id: 1 },
-      { article_id: 2 },
-      { article_id: 1 }
-    ];
-    const actual = formatComments(input, refObj);
-
-    expect(actual).to.deep.equal(expected);
+    formatComments(input, refObj);
+    expect(input).to.deep.equal(untouchedInput);
   });
 });
