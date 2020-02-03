@@ -4,6 +4,6 @@ const {
   articleData,
   userData,
   commentData
-} = require(`./${ENV}-data/`);
+} = require(`./${ENV}-data/index`);
 
 module.exports = { topicData, articleData, userData, commentData };
