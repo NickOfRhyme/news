@@ -2,7 +2,6 @@ const connection = require("../db/connection");
 
 const fetchUserByUsername = username => {
   console.log("in user model");
-  console.log(username);
   return connection
     .select("*")
     .from("users")

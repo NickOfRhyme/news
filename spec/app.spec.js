@@ -76,9 +76,6 @@ describe("/api", () => {
         .get("/api/articles/2")
         .then(({ body }) => {
           expect(body).to.have.keys(
-            "username",
-            "avatar_url",
-            "name",
             "author",
             "title",
             "article_id",
@@ -90,12 +87,89 @@ describe("/api", () => {
           );
         });
     });
-    xit("returns 404 and appropriate error message if article_id does not exits", () => {
+    it("GET returns 404 and appropriate error message if article_id does not exist", () => {
       return request(app)
         .get("/api/articles/5679")
-        .then(result => {
-          console.log(result.error);
+        .then(({ error }) => {
+          expect(error.text).to.equal("Not found");
         });
+    });
+    it("GET returns status 400 and appropriate error message when article_id is invalid", () => {
+      return request(app)
+        .get("/api/articles/interestingarticle")
+        .expect(400)
+        .then(({ error }) => {
+          expect(error.text).to.equal("Invalid syntax");
+        });
+    });
+    it("PATCH returns 202 and a JSON object", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: 1 })
+        .expect(202)
+        .expect("Content-type", "application/json; charset=utf-8");
+    });
+    it("PATCH returns object containing correct keys", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: 1 })
+        .then(({ body }) => {
+          expect(body).to.have.keys(
+            "author",
+            "title",
+            "article_id",
+            "body",
+            "topic",
+            "created_at",
+            "votes"
+          );
+        });
+    });
+    it("PATCH successfully increments votes", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: 1 })
+        .then(({ body }) => {
+          expect(body.votes).to.equal(101);
+        });
+    });
+    it("PATCH successfully decrements votes", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: -1 })
+        .then(({ body }) => {
+          expect(body.votes).to.equal(99);
+        });
+    });
+    it("PATCH returns 404 when given a non-existent article_id", () => {
+      return request(app)
+        .patch("/api/articles/10002")
+        .send({ inc_votes: 2 })
+        .expect(404)
+        .then(({ error }) => {
+          expect(error.text).to.equal("Not found");
+        });
+    });
+    it("PATCH returns 400 when given an invalid article_id", () => {
+      return request(app)
+        .patch("/api/articles/interesting_article")
+        .send({ inc_votes: 2 })
+        .expect(400)
+        .then(({ error }) => {
+          expect(error.text).to.equal("Invalid syntax");
+        });
+    });
+    it("PATCH returns 400 when given an incomplete or malformed request", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ increaseTheVotes: 2 })
+        .expect(400)
+        .then(({ error }) => {
+          expect(error.text).to.equal("Invalid syntax");
+        });
+    });
+    describe.only("/comments", () => {
+      it("", () => {});
     });
   });
 });
