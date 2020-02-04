@@ -169,7 +169,41 @@ describe("/api", () => {
         });
     });
     describe.only("/comments", () => {
-      it("", () => {});
+      it("POST returns 201 and a JSON object", () => {
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send({
+            username: "butter_bridge",
+            body: "I don't have a great deal to say on this topic"
+          })
+          .expect(201)
+          .expect("Content-type", "application/json; charset=utf-8")
+          .then(({ body }) => {
+            expect(body).to.be.an("object");
+          });
+      });
+      it("POST returns object with correct keys and content", () => {
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send({
+            username: "butter_bridge",
+            body: "Test comment"
+          })
+          .then(({ body }) => {
+            expect(body).to.have.keys(
+              "comment_id",
+              "author",
+              "article_id",
+              "body",
+              "votes",
+              "created_at"
+            );
+            expect(body.body).to.equal("Test comment");
+          });
+      });
+      it("POST returns 404 if non-existent article_id is specified", () => {});
+      it("POST returns 400 if request object is malformed or incomplete", () => {});
+      it("POST returns 401 if username does not exist", () => {});
     });
   });
 });

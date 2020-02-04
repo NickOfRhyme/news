@@ -9,4 +9,12 @@ const fetchCommentsByArticleId = article_id => {
     .then(result => result);
 };
 
-module.exports = { fetchCommentsByArticleId };
+const insertCommentByArticleId = (article_id, username, body) => {
+  console.log("in comments model");
+  return connection("comments")
+    .insert({ article_id, body, author: username })
+    .returning("*")
+    .then(result => result);
+};
+
+module.exports = { fetchCommentsByArticleId, insertCommentByArticleId };

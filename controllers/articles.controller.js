@@ -2,7 +2,10 @@ const {
   fetchArticleById,
   updateArticleById
 } = require("../models/articles.model.js");
-const { fetchCommentsByArticleId } = require("../models/comments.model");
+const {
+  fetchCommentsByArticleId,
+  insertCommentByArticleId
+} = require("../models/comments.model");
 
 const getArticleById = (req, res, next) => {
   console.log("in articles controller");
@@ -51,10 +54,25 @@ const patchArticleById = (req, res, next) => {
     });
 };
 
+const postCommentByArticleId = (req, res, next) => {
+  console.log("in articles controller");
+  const { article_id } = req.params;
+  const { username, body } = req.body;
+  insertCommentByArticleId(article_id, username, body)
+    .then(comment => {
+      res.status(201).send(comment[0]);
+    })
+    .catch(err => {
+      next(err);
+    });
+};
+
+const checkUserExists = username => {};
+
 const countComments = article_id => {
   return fetchCommentsByArticleId(article_id).then(resultRows => {
     return resultRows.length;
   });
 };
 
-module.exports = { getArticleById, patchArticleById };
+module.exports = { getArticleById, patchArticleById, postCommentByArticleId };
