@@ -37,19 +37,34 @@ describe("formatDates", () => {
         belongs_to: "They're not exactly dogs, are they?",
         created_by: "butter_bridge",
         votes: 16,
-        created_at: "2017-11-22 12:36:03.389"
+        created_at: new Date(1511354163389)
       }
     ];
     expect(actual).to.deep.equal(expected);
   });
-});
-
-describe("formatDate", () => {
-  it("takes a single unix timestamp and converts it to PSQL format", () => {
-    const input = 1511354163389;
-    const actual = formatDate(input);
-    const expected = "2017-11-22 12:36:03.389";
-    expect(actual).to.equal(expected);
+  it("does not mutate objects within input array", () => {
+    const input = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    const unalteredInput = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    formatDates(input);
+    expect(input).to.deep.equal(unalteredInput);
   });
 });
 
@@ -79,7 +94,7 @@ describe("formatComments", () => {
   it("returns an array", () => {
     expect(formatComments([])).to.be.an("array");
   });
-  it("does returns a new array", () => {
+  it("returns a new array", () => {
     const input = [];
     const actual = formatComments(input);
     const unexpected = input;

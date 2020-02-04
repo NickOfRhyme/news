@@ -1,5 +1,6 @@
 exports.handlePSQLErrors = (err, req, res, next) => {
-  console.log(err);
-  // next(err);
+  next(err);
 };
-exports.handleCustomErrors = (err, req, res, next) => {};
+exports.handleCustomErrors = (err, req, res, next) => {
+  res.status(err.statusCode).send(err.message);
+};

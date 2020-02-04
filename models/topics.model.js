@@ -6,7 +6,7 @@ const fetchTopics = () => {
     .select("*")
     .from("topics")
     .then(topics => {
-      return { topics: topics };
+      return { topics };
     });
 };
 

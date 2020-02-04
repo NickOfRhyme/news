@@ -1,16 +1,7 @@
 exports.formatDates = list => {
-  return list.map(object => {
-    object.created_at = this.formatDate(object.created_at);
-    return object;
+  return list.map(obj => {
+    return { ...obj, created_at: new Date(obj.created_at) };
   });
-};
-
-exports.formatDate = timestamp => {
-  return new Date(timestamp)
-    .toISOString()
-    .split("T")
-    .join(" ")
-    .slice(0, -1);
 };
 
 exports.makeRefObj = (list, key, value) => {
