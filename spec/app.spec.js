@@ -6,11 +6,10 @@ chai.use(require("sams-chai-sorted"));
 const request = require("supertest");
 const app = require("../app");
 const connection = require("../db/connection");
-
 after(() => {
-  // // console.log("destroying connection");
+  console.log("destroying connection");
   connection.destroy(() => {
-    // // console.log("connection destroyed");
+    console.log("connection destroyed");
   });
 });
 describe("/api", () => {
@@ -18,7 +17,7 @@ describe("/api", () => {
     return connection.seed.run();
   });
   describe("/topics", () => {
-    describe("GET", () => {
+    describe.only("GET", () => {
       it("GET returns status 200 with a JSON object", () => {
         return request(app)
           .get("/api/topics")

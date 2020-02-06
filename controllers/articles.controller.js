@@ -5,8 +5,7 @@ const {
 } = require("../models/articles.model.js");
 const {
   fetchCommentsByArticleId,
-  insertCommentByArticleId,
-  countCommentsByArticleId
+  insertCommentByArticleId
 } = require("../models/comments.model");
 
 const getArticles = (req, res, next) => {

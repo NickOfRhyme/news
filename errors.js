@@ -1,3 +1,7 @@
+exports.methodNotAllowed = () => {
+  res.status(405).send({ msg: "method not allowed" });
+};
+
 exports.handlePSQLErrors = (err, req, res, next) => {
   const PSQLErrors = {
     "22P02": { status: 400, message: "Invalid syntax" },
