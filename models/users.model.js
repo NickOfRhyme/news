@@ -13,4 +13,16 @@ const fetchUserByUsername = username => {
     });
 };
 
-module.exports = { fetchUserByUsername };
+const lookForUser = username => {
+  console.log("in user model, checking for users");
+  if (username === undefined) return true;
+  return connection
+    .select("*")
+    .from("users")
+    .where({ username: username })
+    .then(resultRows => {
+      return resultRows.length > 0;
+    });
+};
+
+module.exports = { fetchUserByUsername, lookForUser };

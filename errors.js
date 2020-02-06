@@ -1,5 +1,10 @@
 exports.handlePSQLErrors = (err, req, res, next) => {
-  const PSQLErrors = { "22P02": { status: 400, message: "Invalid syntax" } };
+  const PSQLErrors = {
+    "22P02": { status: 400, message: "Invalid syntax" },
+    23503: { status: 404, message: "Not found" },
+    23502: { status: 400, message: "Invalid syntax" },
+    42703: { status: 404, message: "Column not found" }
+  };
   if (err.code !== undefined) {
     console.log("PSQL error found:", err.code);
     res.status(PSQLErrors[err.code].status).send(PSQLErrors[err.code].message);
@@ -8,6 +13,6 @@ exports.handlePSQLErrors = (err, req, res, next) => {
   }
 };
 exports.handleCustomErrors = (err, req, res, next) => {
-  console.log("Custom errors");
+  console.log("Custom error: ", err);
   res.status(err.statusCode).send(err.message);
 };

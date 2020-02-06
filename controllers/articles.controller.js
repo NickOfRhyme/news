@@ -1,11 +1,24 @@
 const {
+  fetchArticles,
   fetchArticleById,
   updateArticleById
 } = require("../models/articles.model.js");
 const {
   fetchCommentsByArticleId,
-  insertCommentByArticleId
+  insertCommentByArticleId,
+  countCommentsByArticleId
 } = require("../models/comments.model");
+
+const getArticles = (req, res, next) => {
+  console.log("in articles controller");
+  fetchArticles(req.query)
+    .then(articles => {
+      res.send({ articles });
+    })
+    .catch(err => {
+      next(err);
+    });
+};
 
 const getArticleById = (req, res, next) => {
   console.log("in articles controller");
@@ -20,12 +33,12 @@ const getArticleById = (req, res, next) => {
           statusCode: 404
         });
       } else {
-        return Promise.all([article, countComments(article_id)]);
+        return Promise.all([article, countCommentsByArticleId(article_id)]);
       }
     })
     .then(([result, commentCount]) => {
       result.comment_count = commentCount;
-      res.send(result);
+      res.send({ article: result });
     })
     .catch(err => {
       next(err);
@@ -33,6 +46,8 @@ const getArticleById = (req, res, next) => {
 };
 
 const patchArticleById = (req, res, next) => {
+  console.log("in articles controller");
+
   const { article_id } = req.params;
   const { inc_votes } = req.body;
 
@@ -46,7 +61,7 @@ const patchArticleById = (req, res, next) => {
           statusCode: 400
         });
       } else {
-        res.status(202).send(patchedArticle[0]);
+        res.send({ article: patchedArticle[0] });
       }
     })
     .catch(err => {
@@ -56,23 +71,37 @@ const patchArticleById = (req, res, next) => {
 
 const postCommentByArticleId = (req, res, next) => {
   console.log("in articles controller");
+
   const { article_id } = req.params;
   const { username, body } = req.body;
-  insertCommentByArticleId(article_id, username, body)
+
+  return insertCommentByArticleId(article_id, username, body)
     .then(comment => {
-      res.status(201).send(comment[0]);
+      res.status(201).send({ comment: comment[0] });
+    })
+    .catch(err => {
+      console.log("caught");
+      next(err);
+    });
+};
+
+const getCommentsByArticleId = (req, res, next) => {
+  console.log("in articles controller");
+
+  const { article_id } = req.params;
+  fetchCommentsByArticleId(article_id, req.query)
+    .then(comments => {
+      res.send({ comments: comments });
     })
     .catch(err => {
       next(err);
     });
 };
 
-const checkUserExists = username => {};
-
-const countComments = article_id => {
-  return fetchCommentsByArticleId(article_id).then(resultRows => {
-    return resultRows.length;
-  });
+module.exports = {
+  getArticles,
+  getArticleById,
+  patchArticleById,
+  postCommentByArticleId,
+  getCommentsByArticleId
 };
-
-module.exports = { getArticleById, patchArticleById, postCommentByArticleId };
