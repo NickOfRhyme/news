@@ -1,9 +1,15 @@
 const ENV = process.env.NODE_ENV || "development";
-const {
-  topicData,
-  articleData,
-  userData,
-  commentData
-} = require(`./${ENV}-data/index`);
+const test = require("./test-data");
+const development = require("./development-data");
+// const {
+//   topicData,
+//   articleData,
+//   userData,
+//   commentData
+// } = require(`./${ENV}-data/index`);
 
-module.exports = { topicData, articleData, userData, commentData };
+const data = { test, development, production: development };
+
+module.exports = data[ENV];
+
+// module.exports = { topicData, articleData, userData, commentData };
