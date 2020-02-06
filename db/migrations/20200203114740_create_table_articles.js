@@ -8,11 +8,13 @@ exports.up = function(knex) {
     articlesTable
       .string("topic")
       .references("slug")
-      .inTable("topics");
+      .inTable("topics")
+      .notNullable();
     articlesTable
       .string("author")
       .references("username")
-      .inTable("users");
+      .inTable("users")
+      .notNullable();
     articlesTable.timestamp("created_at").defaultTo(knex.fn.now());
   });
 };
