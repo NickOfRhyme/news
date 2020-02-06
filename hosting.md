@@ -142,7 +142,7 @@ In `listen.js`, make sure you take the PORT off the environment object if it's p
 ```js
 const { PORT = 9090 } = process.env;
 
-app.listen(PORT, () => console.log(`Listening on ${PORT}...`));
+app.listen(PORT, () => // console.log(`Listening on ${PORT}...`));
 ```
 
 ## 8. Add a start script

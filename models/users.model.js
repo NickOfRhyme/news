@@ -1,7 +1,7 @@
 const connection = require("../db/connection");
 
 const fetchUserByUsername = username => {
-  console.log("in user model");
+  // console.log("in user model");
   return connection
     .select("*")
     .from("users")
@@ -14,7 +14,7 @@ const fetchUserByUsername = username => {
 };
 
 const lookForUser = username => {
-  console.log("in user model, checking for users");
+  // console.log("in user model, checking for users");
   if (username === undefined) return true;
   return connection
     .select("*")

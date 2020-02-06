@@ -8,9 +8,9 @@ const app = require("../app");
 const connection = require("../db/connection");
 
 after(() => {
-  // console.log("destroying connection");
+  // // console.log("destroying connection");
   connection.destroy(() => {
-    // console.log("connection destroyed");
+    // // console.log("connection destroyed");
   });
 });
 describe("/api", () => {
@@ -198,7 +198,7 @@ describe("/api", () => {
         return request(app)
           .get("/api/articles/2")
           .then(({ body }) => {
-            console.log(body.article);
+            // console.log(body.article);
             expect(body.article).to.have.keys(
               "author",
               "title",
@@ -455,76 +455,80 @@ describe("/api", () => {
     });
   });
   describe("/comments/:comment_id", () => {
-    it("PATCH succesfully increases the number of votes for a comment", () => {
-      return request(app)
-        .patch("/api/comments/1")
-        .send({ inc_votes: 1 })
-        .expect(200)
-        .then(({ body }) => {
-          expect(body).to.be.an("object");
-          expect(body.comment.votes).to.equal(17);
-        });
+    describe("PATCH", () => {
+      it("PATCH succesfully increases the number of votes for a comment", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ inc_votes: 1 })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body).to.be.an("object");
+            expect(body.comment.votes).to.equal(17);
+          });
+      });
+      it("PATCH successfully decrements the number of votes for a comment", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ inc_votes: -1 })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body).to.be.an("object");
+            expect(body.comment.votes).to.equal(15);
+          });
+      });
+      it("PATCH returns 404 when given a non-existent comment_id", () => {
+        return request(app)
+          .patch("/api/comments/10002")
+          .send({ inc_votes: 2 })
+          .expect(404)
+          .then(({ error }) => {
+            expect(error.text).to.equal("Not found");
+          });
+      });
+      it("PATCH returns 400 when given an invalid comment_id", () => {
+        return request(app)
+          .patch("/api/comments/salacious_comment")
+          .send({ inc_votes: 2 })
+          .expect(400)
+          .then(({ error }) => {
+            expect(error.text).to.equal("Invalid syntax");
+          });
+      });
+      it("PATCH returns 400 when given an incomplete or malformed request", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ increaseTheVotes: 2 })
+          .expect(400)
+          .then(({ error }) => {
+            expect(error.text).to.equal("Invalid syntax");
+          });
+      });
     });
-    it("PATCH successfully decrements the number of votes for a comment", () => {
-      return request(app)
-        .patch("/api/comments/1")
-        .send({ inc_votes: -1 })
-        .expect(200)
-        .then(({ body }) => {
-          expect(body).to.be.an("object");
-          expect(body.comment.votes).to.equal(15);
-        });
-    });
-    it("PATCH returns 404 when given a non-existent comment_id", () => {
-      return request(app)
-        .patch("/api/comments/10002")
-        .send({ inc_votes: 2 })
-        .expect(404)
-        .then(({ error }) => {
-          expect(error.text).to.equal("Not found");
-        });
-    });
-    it("PATCH returns 400 when given an invalid comment_id", () => {
-      return request(app)
-        .patch("/api/comments/salacious_comment")
-        .send({ inc_votes: 2 })
-        .expect(400)
-        .then(({ error }) => {
-          expect(error.text).to.equal("Invalid syntax");
-        });
-    });
-    it("PATCH returns 400 when given an incomplete or malformed request", () => {
-      return request(app)
-        .patch("/api/comments/1")
-        .send({ increaseTheVotes: 2 })
-        .expect(400)
-        .then(({ error }) => {
-          expect(error.text).to.equal("Invalid syntax");
-        });
-    });
-    it("DELETE successfully removes comment and returns an empty body", () => {
-      return request(app)
-        .delete("/api/comments/1")
-        .expect(204)
-        .then(({ body }) => {
-          expect(body).to.deep.equal({});
-        });
-    });
-    it("DELETE returns 400 when given an invalid user id", () => {
-      return request(app)
-        .delete("/api/comments/nonsense")
-        .expect(400)
-        .then(({ error }) => {
-          expect(error.text).to.equal("Invalid syntax");
-        });
-    });
-    it("DELETE returns 404 when given a valid but non-existent user id", () => {
-      return request(app)
-        .delete("/api/comments/1395431")
-        .expect(404)
-        .then(({ error }) => {
-          expect(error.text).to.equal("Not found");
-        });
+    describe("DELETE", () => {
+      it("DELETE successfully removes comment and returns an empty body", () => {
+        return request(app)
+          .delete("/api/comments/1")
+          .expect(204)
+          .then(({ body }) => {
+            expect(body).to.deep.equal({});
+          });
+      });
+      it("DELETE returns 400 when given an invalid user id", () => {
+        return request(app)
+          .delete("/api/comments/nonsense")
+          .expect(400)
+          .then(({ error }) => {
+            expect(error.text).to.equal("Invalid syntax");
+          });
+      });
+      it("DELETE returns 404 when given a valid but non-existent user id", () => {
+        return request(app)
+          .delete("/api/comments/1395431")
+          .expect(404)
+          .then(({ error }) => {
+            expect(error.text).to.equal("Not found");
+          });
+      });
     });
   });
 });

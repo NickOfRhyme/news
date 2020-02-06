@@ -43,31 +43,49 @@ const fetchArticles = ({
 };
 
 const fetchArticleById = article_id => {
-  console.log("in articles model");
+  // console.log("in articles model");
   return connection
-    .select("*")
+    .select("articles.*")
     .from("articles")
-    .where({ article_id })
+    .leftJoin("comments", "comments.article_id", "articles.article_id")
+    .count({ comment_count: "comments.comment_id" })
+    .groupBy("articles.article_id")
+    .where({ "articles.article_id": article_id })
     .first()
     .then(article => {
-      console.log(article);
-      return article;
+      if (article === undefined) {
+        return Promise.reject({
+          message: "Not found",
+          statusCode: 404
+        });
+      } else {
+        return article;
+      }
     });
 };
 
-const updateArticleById = (article_id, incrementAmount) => {
-  console.log("in articles model");
+const updateArticleById = (article_id, inc_votes) => {
+  // console.log("in articles model");
   return connection("articles")
     .where({ article_id })
-    .increment("votes", incrementAmount)
+    .increment("votes", inc_votes)
     .returning("*")
     .then(updatedArticle => {
-      return updatedArticle;
+      if (updatedArticle.length === 0) {
+        return Promise.reject({ message: "Not found", statusCode: 404 });
+      } else if (typeof inc_votes !== "number") {
+        return Promise.reject({
+          message: "Invalid syntax",
+          statusCode: 400
+        });
+      } else {
+        return updatedArticle;
+      }
     });
 };
 
 const lookForArticle = article_id => {
-  console.log("In muh articles model, looking for articles");
+  // console.log("In muh articles model, looking for articles");
   return connection("articles")
     .where({ article_id })
     .then(articles => {

@@ -14,11 +14,11 @@ const fetchCommentsByArticleId = (
     .from("comments")
     .orderBy(sort_by, order)
     .then(result => {
-      console.log("result: ", result);
+      // console.log("result: ", result);
       return Promise.all([lookForArticle(article_id), result]);
     })
     .then(([articleOK, result]) => {
-      console.log(articleOK, result);
+      // console.log(articleOK, result);
       if (!articleOK)
         return Promise.reject({ statusCode: 404, message: "Not found" });
       return result;
@@ -26,7 +26,7 @@ const fetchCommentsByArticleId = (
 };
 
 const insertCommentByArticleId = (article_id, username, body) => {
-  console.log("in comments model");
+  // console.log("in comments model");
   return Promise.all([lookForUser(username)]).then(([userExists]) => {
     if (!userExists)
       return Promise.reject({
@@ -41,7 +41,7 @@ const insertCommentByArticleId = (article_id, username, body) => {
 };
 
 const countCommentsByArticleId = article_id => {
-  console.log("in comments model, counting mah comments");
+  // console.log("in comments model, counting mah comments");
   return connection
     .count("*")
     .from("comments")
@@ -51,7 +51,7 @@ const countCommentsByArticleId = article_id => {
 };
 
 const updateCommentById = (comment_id, inc_votes) => {
-  console.log("in comments model");
+  // console.log("in comments model");
   return lookForComment(comment_id).then(commentOK => {
     if (!commentOK)
       return Promise.reject({ message: "Not found", statusCode: 404 });
@@ -65,7 +65,7 @@ const updateCommentById = (comment_id, inc_votes) => {
 };
 
 const removeCommentById = comment_id => {
-  console.log("in comments model");
+  // console.log("in comments model");
   return lookForComment(comment_id).then(commentOK => {
     if (!commentOK)
       return Promise.reject({ message: "Not found", statusCode: 404 });
@@ -77,7 +77,7 @@ const removeCommentById = comment_id => {
 };
 
 const lookForComment = comment_id => {
-  console.log("in muh comments model, looking for comments");
+  // console.log("in muh comments model, looking for comments");
   return connection("comments")
     .select("*")
     .where({ comment_id })
