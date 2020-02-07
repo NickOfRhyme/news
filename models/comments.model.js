@@ -50,8 +50,8 @@ const countCommentsByArticleId = article_id => {
     .then(result => result.count);
 };
 
-const updateCommentById = (comment_id, inc_votes) => {
-  // console.log("in comments model");
+const updateCommentById = (comment_id, inc_votes = 0) => {
+  console.log("in comments model");
   return lookForComment(comment_id).then(commentOK => {
     if (!commentOK)
       return Promise.reject({ message: "Not found", statusCode: 404 });

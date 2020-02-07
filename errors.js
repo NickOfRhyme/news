@@ -1,7 +1,3 @@
-exports.methodNotAllowed = (err, req, res, next) => {
-  res.status(405).send({ msg: "method not allowed" });
-};
-
 exports.handlePSQLErrors = (err, req, res, next) => {
   const PSQLErrors = {
     "22P02": { status: 400, message: "Invalid syntax" },
@@ -23,4 +19,8 @@ exports.handleCustomErrors = (err, req, res, next) => {
 
 exports.handleServerErrors = (err, req, res, next) => {
   res.status(500).send("Server error");
+};
+
+exports.methodNotAllowed = (req, res) => {
+  res.status(405).send("Method not allowed");
 };

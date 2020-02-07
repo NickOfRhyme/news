@@ -150,10 +150,10 @@ describe("/api", () => {
             expect(body.articles).to.deep.equal([]);
           });
       });
-      it("attempts to filter by non-existent topic result in 404", () => {
+      it("attempts to filter by non-existent topic result in 400", () => {
         return request(app)
           .get("/api/articles?topic=golf")
-          .expect(404)
+          .expect(400)
           .then(({ error }) => {
             expect(error.text).to.equal("Column not found");
           });
@@ -174,10 +174,10 @@ describe("/api", () => {
             expect(body.articles).to.deep.equal([]);
           });
       });
-      it("attempts to filter by non-existent author result in 404", () => {
+      it("attempts to filter by non-existent author result in 400", () => {
         return request(app)
           .get("/api/articles?author=karlheinzvonklausewitz")
-          .expect(404)
+          .expect(400)
           .then(({ error }) => {
             expect(error.text).to.equal("Column not found");
           });
@@ -286,13 +286,13 @@ describe("/api", () => {
             expect(error.text).to.equal("Invalid syntax");
           });
       });
-      it("PATCH returns 400 when given an incomplete or malformed request", () => {
+      it("PATCH returns 200 when given an incomplete or malformed request, and does not increment votes", () => {
         return request(app)
           .patch("/api/articles/1")
           .send({ increaseTheVotes: 2 })
-          .expect(400)
-          .then(({ error }) => {
-            expect(error.text).to.equal("Invalid syntax");
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article.votes).to.equal(100);
           });
       });
     });
@@ -495,13 +495,13 @@ describe("/api", () => {
             expect(error.text).to.equal("Invalid syntax");
           });
       });
-      it("PATCH returns 400 when given an incomplete or malformed request", () => {
+      it("PATCH returns 200 when given an incomplete or malformed request, and does not increment votes", () => {
         return request(app)
           .patch("/api/comments/1")
           .send({ increaseTheVotes: 2 })
-          .expect(400)
-          .then(({ error }) => {
-            expect(error.text).to.equal("Invalid syntax");
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comment.votes).to.equal(16);
           });
       });
     });

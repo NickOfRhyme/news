@@ -37,7 +37,7 @@ const fetchArticles = ({
     })
     .then(([topicOK, authorOK, result]) => {
       if (!topicOK || !authorOK)
-        return Promise.reject({ statusCode: 404, message: "Column not found" });
+        return Promise.reject({ statusCode: 400, message: "Column not found" });
       return result;
     });
 };
@@ -64,7 +64,7 @@ const fetchArticleById = article_id => {
     });
 };
 
-const updateArticleById = (article_id, inc_votes) => {
+const updateArticleById = (article_id, inc_votes = 0) => {
   // console.log("in articles model");
   return connection("articles")
     .where({ article_id })

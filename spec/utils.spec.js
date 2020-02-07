@@ -1,7 +1,6 @@
 const { expect } = require("chai");
 const {
   formatDates,
-  formatDate,
   makeRefObj,
   formatComments
 } = require("../db/utils/utils");
@@ -38,6 +37,62 @@ describe("formatDates", () => {
         created_by: "butter_bridge",
         votes: 16,
         created_at: new Date(1511354163389)
+      }
+    ];
+    expect(actual).to.deep.equal(expected);
+  });
+  it("correctly converts timestamps within multiple objects within arrays", () => {
+    const input = [
+      {
+        body:
+          "Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.",
+        belongs_to:
+          "The People Tracking Every Touch, Pass And Tackle in the World Cup",
+        created_by: "tickle122",
+        votes: -1,
+        created_at: 1468087638932
+      },
+      {
+        body: "Nobis consequatur animi. Ullam nobis quaerat voluptates veniam.",
+        belongs_to: "Making sense of Redux",
+        created_by: "grumpy19",
+        votes: 7,
+        created_at: 1478813209256
+      },
+      {
+        body:
+          "Qui sunt sit voluptas repellendus sed. Voluptatem et repellat fugiat. Rerum doloribus eveniet quidem vero aut sint officiis. Dolor facere et et architecto vero qui et perferendis dolorem. Magni quis ratione adipisci error assumenda ut. Id rerum eos facere sit nihil ipsam officia aspernatur odio.",
+        belongs_to: "22 Amazing open source React projects",
+        created_by: "grumpy19",
+        votes: 3,
+        created_at: 1504183900263
+      }
+    ];
+    const actual = formatDates(input);
+    const expected = [
+      {
+        body:
+          "Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.",
+        belongs_to:
+          "The People Tracking Every Touch, Pass And Tackle in the World Cup",
+        created_by: "tickle122",
+        votes: -1,
+        created_at: new Date(1468087638932)
+      },
+      {
+        body: "Nobis consequatur animi. Ullam nobis quaerat voluptates veniam.",
+        belongs_to: "Making sense of Redux",
+        created_by: "grumpy19",
+        votes: 7,
+        created_at: new Date(1478813209256)
+      },
+      {
+        body:
+          "Qui sunt sit voluptas repellendus sed. Voluptatem et repellat fugiat. Rerum doloribus eveniet quidem vero aut sint officiis. Dolor facere et et architecto vero qui et perferendis dolorem. Magni quis ratione adipisci error assumenda ut. Id rerum eos facere sit nihil ipsam officia aspernatur odio.",
+        belongs_to: "22 Amazing open source React projects",
+        created_by: "grumpy19",
+        votes: 3,
+        created_at: new Date(1504183900263)
       }
     ];
     expect(actual).to.deep.equal(expected);
