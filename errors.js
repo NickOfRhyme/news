@@ -1,4 +1,4 @@
-exports.methodNotAllowed = () => {
+exports.methodNotAllowed = (err, req, res, next) => {
   res.status(405).send({ msg: "method not allowed" });
 };
 
@@ -19,4 +19,8 @@ exports.handlePSQLErrors = (err, req, res, next) => {
 exports.handleCustomErrors = (err, req, res, next) => {
   // console.log("Custom error: ", err);
   res.status(err.statusCode).send(err.message);
+};
+
+exports.handleServerErrors = (err, req, res, next) => {
+  res.status(500).send("Server error");
 };
