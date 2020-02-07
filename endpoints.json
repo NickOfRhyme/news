@@ -23,5 +23,79 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an object containing a single article",
+    "exampleResponse": {
+      "article": {
+        "title": "Seafood substitutions are increasing",
+        "topic": "cooking",
+        "author": "weegembump",
+        "body": "Text from the article..",
+        "created_at": 1527695953341
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "increase or decrease the votes on a particular article",
+    "exampleRequest": { "inc_votes": 1 },
+    "exampleResponse": {
+      "article": {
+        "title": "Seafood substitutions are increasing",
+        "topic": "cooking",
+        "author": "weegembump",
+        "body": "Text from the article..",
+        "created_at": 1527695953341
+      }
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "posts a new comment on a particular article",
+    "exampleRequest": {
+      "username": "grumpy19",
+      "body": "Text for the comment.."
+    }
+  },
+  "exampleResponse": {
+    "comment": {
+      "comment_id": 44,
+      "votes": 4,
+      "created_at": "2017-11-20T08:58:48.322Z",
+      "author": "grumpy19",
+      "body": "Text for the comment..."
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves up an array of comments made on a particular article",
+    "queries": ["sort_by", "queries"],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 44,
+          "votes": 4,
+          "created_at": "2017-11-20T08:58:48.322Z",
+          "author": "grumpy19",
+          "body": "Error est qui id corrupti et quod enim accusantium minus. Deleniti quae ea magni officiis et qui suscipit non."
+        }
+      ]
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "increase or decrease the votes on a particular comment",
+    "exampleRequest": {
+      "inc_votes": 1
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 44,
+        "votes": 5,
+        "created_at": "2017-11-20T08:58:48.322Z",
+        "author": "grumpy19",
+        "body": "Error est qui id corrupti et quod enim accusantium minus. Deleniti quae ea magni officiis et qui suscipit non."
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes the given comment"
   }
 }
