@@ -113,11 +113,12 @@ describe("/api", () => {
             expect(body.articles).to.be.descendingBy("topic");
           });
       });
-      it("attempts to sort by a non-existent column result in 404", () => {
+      it("attempts to sort by a non-existent column result in a reversion to default sorting", () => {
         return request(app)
-          .get("/api/articles?sort_by=fearsomeness")
-          .then(({ error }) => {
-            expect(error.text).to.equal("Column not found");
+          .get("/api/articles?sort_by=delightfulness")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles).to.be.descendingBy("created_at");
           });
       });
       it("article objects within array can be sorted in ascending order", () => {
@@ -374,12 +375,12 @@ describe("/api", () => {
               expect(body.comments).to.be.descendingBy("created_at");
             });
         });
-        it("when given invalid column to sort by, returns 404", () => {
+        it("when given invalid column to sort by, reverts to default sorting", () => {
           return request(app)
             .get("/api/articles/1/comments?sort_by=fruitiness")
-            .expect(404)
-            .then(({ error }) => {
-              expect(error.text).to.equal("Column not found");
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments).to.be.descendingBy("created_at");
             });
         });
       });

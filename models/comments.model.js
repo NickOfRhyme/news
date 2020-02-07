@@ -6,6 +6,16 @@ const fetchCommentsByArticleId = (
   article_id,
   { order = "desc", sort_by = "created_at" }
 ) => {
+  const acceptableSorts = [
+    "comment_id",
+    "created_at",
+    "author",
+    "title",
+    "topic",
+    "votes",
+    "article_id"
+  ];
+  if (!acceptableSorts.includes(sort_by)) sort_by = "created_at";
   if (order !== "desc" && order !== "asc") order = "desc";
 
   return connection
@@ -51,7 +61,7 @@ const countCommentsByArticleId = article_id => {
 };
 
 const updateCommentById = (comment_id, inc_votes = 0) => {
-  console.log("in comments model");
+  // console.log("in comments model");
   return lookForComment(comment_id).then(commentOK => {
     if (!commentOK)
       return Promise.reject({ message: "Not found", statusCode: 404 });

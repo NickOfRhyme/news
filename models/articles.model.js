@@ -8,7 +8,16 @@ const fetchArticles = ({
   author,
   topic
 }) => {
+  const acceptableSorts = [
+    "created_at",
+    "author",
+    "title",
+    "topic",
+    "votes",
+    "article_id"
+  ];
   if (order !== "asc" && order !== "desc") order = "desc";
+  if (!acceptableSorts.includes(sort_by)) sort_by = "created_at";
 
   return connection
     .select(
