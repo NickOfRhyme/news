@@ -200,7 +200,6 @@ describe("/api", () => {
         return request(app)
           .get("/api/articles/2")
           .then(({ body }) => {
-            // console.log(body.article);
             expect(body.article).to.have.keys(
               "author",
               "title",

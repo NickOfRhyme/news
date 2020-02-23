@@ -2,12 +2,7 @@ const connection = require("../db/connection");
 const { lookForTopic } = require("./topics.model");
 const { lookForUser } = require("./users.model");
 
-const fetchArticles = ({
-  sort_by = "created_at",
-  order = "desc",
-  author,
-  topic
-}) => {
+const fetchArticles = (sort_by, order, author, topic) => {
   const acceptableSorts = [
     "created_at",
     "author",
@@ -52,7 +47,6 @@ const fetchArticles = ({
 };
 
 const fetchArticleById = article_id => {
-  // console.log("in articles model");
   return connection
     .select("articles.*")
     .from("articles")
@@ -74,7 +68,6 @@ const fetchArticleById = article_id => {
 };
 
 const updateArticleById = (article_id, inc_votes = 0) => {
-  // console.log("in articles model");
   return connection("articles")
     .where({ article_id })
     .increment("votes", inc_votes)
@@ -94,7 +87,6 @@ const updateArticleById = (article_id, inc_votes = 0) => {
 };
 
 const lookForArticle = article_id => {
-  // console.log("In muh articles model, looking for articles");
   return connection("articles")
     .where({ article_id })
     .then(articles => {

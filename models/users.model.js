@@ -1,11 +1,10 @@
 const connection = require("../db/connection");
 
 const fetchUserByUsername = username => {
-  // console.log("in user model");
   return connection
     .select("*")
     .from("users")
-    .where({ username: username })
+    .where({ username })
     .then(resultRows => {
       if (resultRows.length === 0)
         return Promise.reject({ message: "Not found", statusCode: 404 });
@@ -14,12 +13,11 @@ const fetchUserByUsername = username => {
 };
 
 const lookForUser = username => {
-  // console.log("in user model, checking for users");
   if (username === undefined) return true;
   return connection
     .select("*")
     .from("users")
-    .where({ username: username })
+    .where({ username })
     .then(resultRows => {
       return resultRows.length > 0;
     });

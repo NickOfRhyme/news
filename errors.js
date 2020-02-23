@@ -6,15 +6,15 @@ exports.handlePSQLErrors = (err, req, res, next) => {
     42703: { status: 404, message: "Column not found" }
   };
   if (err.code !== undefined) {
-    // console.log("PSQL error found:", err.code);
     res.status(PSQLErrors[err.code].status).send(PSQLErrors[err.code].message);
   } else {
     next(err);
   }
 };
 exports.handleCustomErrors = (err, req, res, next) => {
-  // console.log("Custom error: ", err);
-  res.status(err.statusCode).send(err.message);
+  if (err.statusCode !== undefined)
+    res.status(err.statusCode).send(err.message);
+  else next(err);
 };
 
 exports.handleServerErrors = (err, req, res, next) => {

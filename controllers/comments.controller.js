@@ -8,8 +8,8 @@ const patchCommentById = (req, res, next) => {
   const { inc_votes } = req.body;
 
   updateCommentById(comment_id, inc_votes)
-    .then(comment => {
-      res.send({ comment: comment[0] });
+    .then(([comment]) => {
+      res.send({ comment });
     })
     .catch(err => {
       next(err);
