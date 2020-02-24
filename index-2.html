@@ -1,0 +1,103 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Unknown </title></head><body>
+<h1 id="hosting-a-psql-db-using-heroku">Hosting a PSQL DB using Heroku</h1>
+<p>There are many ways to host applications like the one you have created. One of these solutions is Heroku. Heroku provides a service that you can push your code to and it will build, run and host it. Heroku also allows for easy database integration. Their <a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs">documentation</a> is excellent, so take a look at that. This document is essentially a more condensed, specific version of the steps described in the Heroku docs.</p>
+<h2 id="1-install-the-heroku-cli">1. Install the Heroku CLI</h2>
+<p>On macOS:</p>
+<p><code>bash
+brew tap heroku/brew &amp;&amp; brew install heroku</code></p>
+<p>...or Ubuntu:</p>
+<p><code>bash
+sudo snap install --classic heroku</code></p>
+<h2 id="2-create-a-heroku-app">2. Create a Heroku App</h2>
+<p>Log into Heroku using their command line interface:</p>
+<p><code>bash
+heroku login</code></p>
+<p>Create an app in an active git directory. Doing this in the folder where your server exists is a good start, as this is what you will be hosting.</p>
+<p><code>bash
+heroku create your-app-name</code></p>
+<p>Here <code>your-app-name</code> should be the name you want to give your application. If you don't specify an app name, you'll get a random one which can sometimes be a bit iffy.</p>
+<p>This command will both create an app on Heroku for your account. It will also add a new <code>remote</code> to your git repository.
+Check this by looking at your git remotes:</p>
+<p><code>bash
+git remote -v</code></p>
+<h2 id="3-push-your-code-up-to-heroku">3. Push Your code up to Heroku</h2>
+<p><code>bash
+git push heroku master</code></p>
+<h2 id="4-creating-a-hosted-database">4. Creating a Hosted Database</h2>
+<p>Go to the heroku site and log in.</p>
+<ul>
+<li>Select your application</li>
+<li><code>Configure Add-ons</code></li>
+<li>Choose <code>Heroku Postgres</code></li>
+</ul>
+<p>The free tier will be adequate for our purposes. This will provide you with a <code>postgreSQL</code> pre-created database!</p>
+<p>Check that the database exists. Click <code>settings</code> on it, and view the credentials. Keep an eye on the URI. Don't close this yet!</p>
+<h2 id="5-seeding-the-production-database">5. Seeding the Production Database</h2>
+<p>Check that your database's url is added to the environment variables on Heroku:</p>
+<p><code>bash
+heroku config:get DATABASE_URL</code></p>
+<p>If you are in your app's directory, and the database is correctly linked as an add on to Heroku, it should display a DB URI string that is exactly the same as the one in your credentials.</p>
+<p>At the top of your <code>knexfile.js</code>, add the following line of code:</p>
+<p><code>js
+const { DB_URL } = process.env;</code></p>
+<p>Then add a <code>production</code> key to the <code>customConfigs</code> object:</p>
+<p><code>js
+const { DB_URL } = process.env;
+// ...
+const customConfigs = {
+  // ...
+  production: {
+    connection: `${DB_URL}?ssl=true`,
+  },
+};
+// ...</code></p>
+<p>It is critical to add the query of <code>ssl=true</code>, otherwise this will not work!</p>
+<p>In your <code>./db/data/index.js</code> add a key of production with a value of your development data in your data object. Something like:</p>
+<p><code>js
+const data = { test, development, production: development };</code></p>
+<p>This is will ensure your production DB will get seeded with the development data.</p>
+<p>In your <code>package.json</code>, add the following keys to the scripts:</p>
+<p><code>json
+{
+  "scripts": {
+    "seed:prod": "NODE_ENV=production DB_URL=$(heroku config:get DATABASE_URL) knex seed:run",
+    "migrate-latest:prod": "NODE_ENV=production DB_URL=$(heroku config:get DATABASE_URL) knex migrate:latest",
+    "migrate-rollback:prod": "NODE_ENV=production DB_URL=$(heroku config:get DATABASE_URL) knex migrate:rollback"
+  }
+}</code></p>
+<p>Each of these will establish an environment variable called <code>DB_URL</code>, and set it to whatever heroku provides as your DB URL. It is essential that you do this as the DB URL may change! This deals with a lack of predictability on heroku's end.</p>
+<p>Make sure to <strong>run the seed prod script</strong> from your <code>package.json</code>:</p>
+<p><code>bash
+npm run seed:prod</code></p>
+<h2 id="6-connect-to-the-hosted-database-when-on-heroku">6. Connect To The Hosted Database when on Heroku</h2>
+<p>Change your connection file to look something like this:</p>
+<p>```js
+const ENV = process.env.NODE_ENV || 'development';
+const knex = require('knex');</p>
+<p>const dbConfig =
+  ENV === 'production'
+    ? { client: 'pg', connection: process.env.DATABASE_URL }
+    : require('../knexfile');</p>
+<p>module.exports = knex(dbConfig);
+```</p>
+<p>It should check whether you're in production, and if you are, it should connect to the production database. Otherwise it will connect to the (<code>.gitignore</code>'d) knex file.</p>
+<h2 id="7-use-herokus-port">7. Use Heroku's PORT</h2>
+<p>In <code>listen.js</code>, make sure you take the PORT off the environment object if it's provided, like so:</p>
+<p>```js
+const { PORT = 9090 } = process.env;</p>
+<p>app.listen(PORT, () =&gt; // console.log(<code>Listening on ${PORT}...</code>));
+```</p>
+<h2 id="8-add-a-start-script">8. Add a start script</h2>
+<p>Make sure your package.json has this as a start script:</p>
+<p><code>json
+"start": "node listen.js",</code></p>
+<p>Commit your changes, and push to heroku master.</p>
+<p><code>bash
+git push heroku master</code></p>
+<h2 id="9-review-your-app">9. Review Your App</h2>
+<p><code>bash
+heroku open</code></p>
+<p>Any issues should be debugged with:</p>
+<p><code>bash
+heroku logs --tail</code></p>
+</body></html>
