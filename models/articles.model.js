@@ -9,7 +9,8 @@ const fetchArticles = (sort_by, order, author, topic) => {
     "title",
     "topic",
     "votes",
-    "article_id"
+    "article_id",
+    "comment_count"
   ];
   if (order !== "asc" && order !== "desc") order = "desc";
   if (!acceptableSorts.includes(sort_by)) sort_by = "created_at";
