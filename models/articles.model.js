@@ -23,7 +23,7 @@ const fetchArticles = (sort_by, order, author, topic) => {
       "articles.topic",
       "articles.created_at",
       "articles.votes",
-      "articles.body"
+      "articles.body AS preview"
     )
     .from("articles")
     .count({ comment_count: "comments.comment_id" })
@@ -44,7 +44,8 @@ const fetchArticles = (sort_by, order, author, topic) => {
     .then(([topicOK, authorOK, result]) => {
       if (!topicOK || !authorOK)
         return Promise.reject({ statusCode: 400, message: "Column not found" });
-      result.body = result.body.slice(0, 30) + "...";
+      console.dir(result);
+      // result.preview = result.preview.slice(0, 30) + "...";
       return result;
     });
 };
