@@ -94,7 +94,8 @@ describe("/api", () => {
                 "topic",
                 "created_at",
                 "votes",
-                "comment_count"
+                "comment_count",
+                "preview"
               );
             });
           });

@@ -46,7 +46,7 @@ const fetchArticles = (sort_by, order, author, topic) => {
         return Promise.reject({ statusCode: 400, message: "Column not found" });
       console.dir(result);
       return result.map(article => {
-        article.preview = article.preview.slice(30) + "...";
+        article.preview = article.preview.slice(0, 30) + "...";
         return article;
       });
     });
