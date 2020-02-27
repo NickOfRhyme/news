@@ -2,7 +2,23 @@ const connection = require("../db/connection");
 const { lookForTopic } = require("./topics.model");
 const { lookForUser } = require("./users.model");
 
-const fetchArticles = (sort_by, order, author, topic) => {
+const countArticles = (author, topic) => {
+  return connection("articles")
+    .modify(query => {
+      if (author !== undefined) {
+        query.where({ author });
+      }
+      if (topic !== undefined) {
+        query.where({ topic });
+      }
+    })
+    .count("*")
+    .then(result => {
+      return result[0].count;
+    });
+};
+
+const fetchArticles = (sort_by, order, author, topic, page, limit = 10) => {
   const acceptableSorts = [
     "created_at",
     "author",
@@ -35,18 +51,27 @@ const fetchArticles = (sort_by, order, author, topic) => {
       if (topic !== undefined) {
         query.where({ topic });
       }
+      if (page !== undefined) {
+        query.offset((page - 1) * limit);
+        query.limit(limit);
+      }
     })
     .groupBy("articles.article_id")
     .orderBy(sort_by, order)
     .then(result => {
-      return Promise.all([lookForTopic(topic), lookForUser(author), result]);
+      return Promise.all([
+        lookForTopic(topic),
+        lookForUser(author),
+        countArticles(author, topic),
+        result
+      ]);
     })
-    .then(([topicOK, authorOK, result]) => {
+    .then(([topicOK, authorOK, articleCount, result]) => {
       if (!topicOK || !authorOK)
         return Promise.reject({ statusCode: 400, message: "Column not found" });
-      console.dir(result);
       return result.map(article => {
         article.preview = article.preview.slice(0, 30) + "...";
+        article.total_count = articleCount;
         return article;
       });
     });

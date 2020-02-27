@@ -4,7 +4,7 @@ const { lookForUser } = require("./users.model");
 
 const fetchCommentsByArticleId = (
   article_id,
-  { order = "desc", sort_by = "created_at" }
+  { order = "desc", sort_by = "created_at", p, limit = 10 }
 ) => {
   const acceptableSorts = [
     "comment_id",
@@ -22,6 +22,12 @@ const fetchCommentsByArticleId = (
     .select("comment_id", "votes", "created_at", "author", "body")
     .where({ article_id })
     .from("comments")
+    .modify(query => {
+      if (p !== undefined) {
+        query.offset((p - 1) * limit);
+        query.limit(limit);
+      }
+    })
     .orderBy(sort_by, order)
     .then(result => {
       return Promise.all([lookForArticle(article_id), result]);

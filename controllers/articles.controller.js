@@ -9,9 +9,9 @@ const {
 } = require("../models/comments.model");
 
 const getArticles = (req, res, next) => {
-  const { sort_by, order, author, topic } = req.query;
+  const { sort_by, order, author, topic, p, limit } = req.query;
 
-  fetchArticles(sort_by, order, author, topic)
+  fetchArticles(sort_by, order, author, topic, p, limit)
     .then(articles => {
       res.send({ articles });
     })
