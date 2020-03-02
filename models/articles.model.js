@@ -2,22 +2,6 @@ const connection = require("../db/connection");
 const { lookForTopic } = require("./topics.model");
 const { lookForUser } = require("./users.model");
 
-const countArticles = (author, topic) => {
-  return connection("articles")
-    .modify(query => {
-      if (author !== undefined) {
-        query.where({ author });
-      }
-      if (topic !== undefined) {
-        query.where({ topic });
-      }
-    })
-    .count("*")
-    .then(result => {
-      return result[0].count;
-    });
-};
-
 const fetchArticles = (sort_by, order, author, topic, page, limit = 10) => {
   const acceptableSorts = [
     "created_at",
@@ -117,6 +101,22 @@ const updateArticleById = (article_id, inc_votes = 0) => {
     });
 };
 
+const insertArticle = (author, topic, title, body) => {
+  return Promise.all([lookForUser(author), lookForTopic(topic)]).then(
+    ([userExists, topicExists]) => {
+      if (!userExists || !topicExists)
+        return Promise.reject({
+          message: "Unauthorised operation",
+          statusCode: 401
+        });
+      return connection("articles")
+        .insert({ author, topic, title, body })
+        .returning("*")
+        .then(result => result);
+    }
+  );
+};
+
 const lookForArticle = article_id => {
   return connection("articles")
     .where({ article_id })
@@ -125,9 +125,26 @@ const lookForArticle = article_id => {
     });
 };
 
+const countArticles = (author, topic) => {
+  return connection("articles")
+    .modify(query => {
+      if (author !== undefined) {
+        query.where({ author });
+      }
+      if (topic !== undefined) {
+        query.where({ topic });
+      }
+    })
+    .count("*")
+    .then(result => {
+      return result[0].count;
+    });
+};
+
 module.exports = {
   fetchArticleById,
   updateArticleById,
   fetchArticles,
-  lookForArticle
+  lookForArticle,
+  insertArticle
 };
