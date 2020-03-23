@@ -42,6 +42,21 @@ describe("/api", () => {
           });
       });
     });
+    describe.only("POST", () => {
+      it("POSTING a new topic returns status 201 and a topic object containing the slug and description", () => {
+        return request(app)
+          .post("/api/topics")
+          .send({
+            author: "rogersop",
+            slug: "defenestration",
+            description: "articles about chucking stuff out of windows"
+          })
+          .then(({ body }) => {
+            expect(body).to.be.an("object");
+            expect(body.topic).to.have.keys("slug", "description");
+          });
+      });
+    });
   });
   describe("/users/:username", () => {
     describe("GET", () => {

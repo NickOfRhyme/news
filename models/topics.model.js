@@ -1,4 +1,5 @@
 const connection = require("../db/connection");
+const { lookForUser } = require("./users.model");
 
 const lookForTopic = topicSlug => {
   if (topicSlug === undefined) return true;
@@ -20,4 +21,18 @@ const fetchTopics = () => {
     });
 };
 
-module.exports = { fetchTopics, lookForTopic };
+const insertTopic = (author, slug, description) => {
+  return lookForUser(author).then(userExists => {
+    if (!userExists)
+      return Promise.reject({
+        message: "Unauthorised operation",
+        statusCode: 401
+      });
+    return connection("topics")
+      .insert({ slug, description })
+      .returning("*")
+      .then(result => result);
+  });
+};
+
+module.exports = { fetchTopics, lookForTopic, insertTopic };
