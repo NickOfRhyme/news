@@ -92,12 +92,27 @@ describe("/api", () => {
                 "title",
                 "article_id",
                 "topic",
+                "total_count",
                 "created_at",
                 "votes",
                 "comment_count",
                 "preview"
               );
             });
+          });
+      });
+      it("when pagination is specified, array contains 10 articles", () => {
+        return request(app)
+          .get("/api/articles?p=1")
+          .then(({ body }) => {
+            expect(body.articles).to.be.length(10);
+          });
+      });
+      it("when pagination is specified an a limit of 6 is set, array contains 6 articles", () => {
+        return request(app)
+          .get("/api/articles?p=1&limit=6")
+          .then(({ body }) => {
+            expect(body.articles).to.be.length(6);
           });
       });
       it("article objects within array are by default sorted by date in descending order", () => {
@@ -182,6 +197,30 @@ describe("/api", () => {
           .expect(400)
           .then(({ error }) => {
             expect(error.text).to.equal("Column not found");
+          });
+      });
+    });
+    describe("POST", () => {
+      it("POST returns an object with correct keys and content", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "rogersop",
+            topic: "cats",
+            title: "What a movie",
+            body: "I feel bad for Tom Hooper"
+          })
+          .then(({ body }) => {
+            expect(body.article).to.have.keys(
+              "article_id",
+              "title",
+              "topic",
+              "body",
+              "author",
+              "votes",
+              "created_at"
+            );
+            expect(body.article.body).to.equal("I feel bad for Tom Hooper");
           });
       });
     });
@@ -345,6 +384,13 @@ describe("/api", () => {
             .get("/api/articles/1/comments")
             .then(({ body }) => {
               expect(body.comments).to.be.descendingBy("created_at");
+            });
+        });
+        it("when pagination is specified and a limit of 3 is set, returns an array of 3 comments", () => {
+          return request(app)
+            .get("/api/articles/1/comments?p=1&limit=3")
+            .then(({ body }) => {
+              expect(body.comments).to.be.length(3);
             });
         });
         it("array within GET can be sorted by comment_id", () => {
