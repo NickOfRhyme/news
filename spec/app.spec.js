@@ -42,7 +42,7 @@ describe("/api", () => {
           });
       });
     });
-    describe.only("POST", () => {
+    describe("POST", () => {
       it("POSTING a new topic returns status 201 and a topic object containing the slug and description", () => {
         return request(app)
           .post("/api/topics")
@@ -515,6 +515,32 @@ describe("/api", () => {
             });
         });
       });
+      describe.only("DELETE", () => {
+        it("DELETE successfully removes article and returns an empty body", () => {
+          return request(app)
+            .delete("/api/articles/1")
+            .expect(204)
+            .then(({ body }) => {
+              expect(body).to.deep.equal({});
+            });
+        });
+        it("DELETE returns 400 when given an invalid comment id", () => {
+          return request(app)
+            .delete("/api/articles/potato")
+            .expect(400)
+            .then(({ error }) => {
+              expect(error.text).to.equal("Invalid syntax");
+            });
+        });
+        it("DELETE returns 404 when given a valid but non-existent comment id", () => {
+          return request(app)
+            .delete("/api/articles/129387")
+            .expect(404)
+            .then(({ error }) => {
+              expect(error.text).to.equal("Not found");
+            });
+        });
+      });
     });
   });
   describe("/comments/:comment_id", () => {
@@ -576,7 +602,7 @@ describe("/api", () => {
             expect(body).to.deep.equal({});
           });
       });
-      it("DELETE returns 400 when given an invalid user id", () => {
+      it("DELETE returns 400 when given an invalid comment id", () => {
         return request(app)
           .delete("/api/comments/nonsense")
           .expect(400)
@@ -584,7 +610,7 @@ describe("/api", () => {
             expect(error.text).to.equal("Invalid syntax");
           });
       });
-      it("DELETE returns 404 when given a valid but non-existent user id", () => {
+      it("DELETE returns 404 when given a valid but non-existent comment id", () => {
         return request(app)
           .delete("/api/comments/1395431")
           .expect(404)

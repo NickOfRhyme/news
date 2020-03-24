@@ -101,6 +101,17 @@ const updateArticleById = (article_id, inc_votes = 0) => {
     });
 };
 
+const removeArticleById = article_id => {
+  return lookForArticle(article_id).then(articleOK => {
+    if (!articleOK)
+      return Promise.reject({ message: "Not found", statusCode: 404 });
+    else
+      return connection("articles")
+        .where({ article_id })
+        .del();
+  });
+};
+
 const insertArticle = (author, topic, title, body) => {
   return Promise.all([lookForUser(author), lookForTopic(topic)]).then(
     ([userExists, topicExists]) => {
@@ -146,5 +157,6 @@ module.exports = {
   updateArticleById,
   fetchArticles,
   lookForArticle,
-  insertArticle
+  insertArticle,
+  removeArticleById
 };
