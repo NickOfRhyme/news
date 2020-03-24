@@ -1,5 +1,12 @@
 const connection = require("../db/connection");
 
+const fetchUsers = () => {
+  return connection
+    .select("*")
+    .from("users")
+    .then(users => users);
+};
+
 const fetchUserByUsername = username => {
   return connection
     .select("*")
@@ -10,6 +17,17 @@ const fetchUserByUsername = username => {
         return Promise.reject({ message: "Not found", statusCode: 404 });
       return resultRows[0];
     });
+};
+
+const removeUserByUsername = username => {
+  return lookForUser(username).then(userOK => {
+    if (!userOK)
+      return Promise.reject({ message: "User not found", statusCode: 404 });
+    else
+      return connection("users")
+        .where({ username })
+        .del();
+  });
 };
 
 const lookForUser = username => {
@@ -23,4 +41,9 @@ const lookForUser = username => {
     });
 };
 
-module.exports = { fetchUserByUsername, lookForUser };
+module.exports = {
+  fetchUserByUsername,
+  lookForUser,
+  fetchUsers,
+  removeUserByUsername
+};

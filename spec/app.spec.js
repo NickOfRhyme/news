@@ -58,31 +58,65 @@ describe("/api", () => {
       });
     });
   });
-  describe("/users/:username", () => {
+  describe.only("/users", () => {
     describe("GET", () => {
-      it("GET returns status 200 with a JSON object", () => {
+      it("GET returns an array of users", () => {
         return request(app)
-          .get("/api/users/lurker")
+          .get("/api/users")
           .expect(200)
-          .expect("Content-type", "application/json; charset=utf-8")
-          .then(body => {
-            expect(body).to.be.an("object");
-          });
-      });
-      it("object returned by GET has 'user' property, which contains an object with username, avatar_url and name properties", () => {
-        return request(app)
-          .get("/api/users/lurker")
           .then(({ body }) => {
-            expect(body.user).to.have.keys("username", "avatar_url", "name");
+            expect(body.users).to.be.an("array");
+            body.users.forEach(user => {
+              expect(user).to.be.an("object");
+              expect(user).to.have.keys("username", "avatar_url", "name");
+            });
           });
       });
-      it("returns 404 and appropriate error message if username does not exits", () => {
-        return request(app)
-          .get("/api/users/carl_incognito")
-          .expect(404)
-          .then(({ error }) => {
-            expect(error.text).to.equal("Not found");
-          });
+    });
+    describe("/:username", () => {
+      describe("GET", () => {
+        it("GET returns status 200 with a JSON object", () => {
+          return request(app)
+            .get("/api/users/lurker")
+            .expect(200)
+            .expect("Content-type", "application/json; charset=utf-8")
+            .then(body => {
+              expect(body).to.be.an("object");
+            });
+        });
+        it("object returned by GET has 'user' property, which contains an object with username, avatar_url and name properties", () => {
+          return request(app)
+            .get("/api/users/lurker")
+            .then(({ body }) => {
+              expect(body.user).to.have.keys("username", "avatar_url", "name");
+            });
+        });
+        it("returns 404 and appropriate error message if username does not exits", () => {
+          return request(app)
+            .get("/api/users/carl_incognito")
+            .expect(404)
+            .then(({ error }) => {
+              expect(error.text).to.equal("Not found");
+            });
+        });
+      });
+      describe("DELETE", () => {
+        it("DELETE removes the given user and returns an empty body", () => {
+          return request(app)
+            .delete("/api/users/lurker")
+            .expect(204)
+            .then(({ body }) => {
+              expect(body).to.deep.equal({});
+            });
+        });
+        it("attempts to DELETE a non-existant user return 404", () => {
+          return request(app)
+            .delete("/api/users/mrmanager")
+            .expect(404)
+            .then(error => {
+              expect(error.text).to.equal("User not found");
+            });
+        });
       });
     });
   });
@@ -515,7 +549,7 @@ describe("/api", () => {
             });
         });
       });
-      describe.only("DELETE", () => {
+      describe("DELETE", () => {
         it("DELETE successfully removes article and returns an empty body", () => {
           return request(app)
             .delete("/api/articles/1")
