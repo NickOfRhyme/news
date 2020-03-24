@@ -7,6 +7,20 @@ const fetchUsers = () => {
     .then(users => users);
 };
 
+const insertUser = (username, name, avatar_url) => {
+  return lookForUser(username).then(userExists => {
+    if (userExists)
+      return Promise.reject({
+        message: "User already registered",
+        statusCode: 409
+      });
+    return connection("users")
+      .insert({ username, name, avatar_url })
+      .returning("*")
+      .then(user => user);
+  });
+};
+
 const fetchUserByUsername = username => {
   return connection
     .select("*")
@@ -43,6 +57,7 @@ const lookForUser = username => {
 
 module.exports = {
   fetchUserByUsername,
+  insertUser,
   lookForUser,
   fetchUsers,
   removeUserByUsername

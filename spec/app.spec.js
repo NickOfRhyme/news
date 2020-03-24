@@ -73,6 +73,38 @@ describe("/api", () => {
           });
       });
     });
+    describe("POST", () => {
+      it("POST returns 201 and a JSON object", () => {
+        return request(app)
+          .post("/api/users")
+          .send({ username: "Captain Howdy", name: "Pazuzu" })
+          .expect(201)
+          .expect("Content-type", "application/json; charset=utf-8")
+          .then(({ body }) => {
+            expect(body).to.be.an("object");
+          });
+      });
+      it("POST returns object with correct keys and content", () => {
+        return request(app)
+          .post("/api/users")
+          .send({ username: "Captain Howdy", name: "Pazuzu" })
+          .then(({ body }) => {
+            expect(body.user).to.have.keys("username", "name", "avatar_url");
+            expect(body.user.username).to.equal("Captain Howdy");
+            expect(body.user.name).to.equal("Pazuzu");
+            expect(body.user.avatar_url).to.be.null;
+          });
+      });
+      it("POST returns status 409 if attempt is made to post an already existing user", () => {
+        return request(app)
+          .post("/api/users")
+          .send({ username: "lurker", name: "Lurky McLurkington" })
+          .expect(409)
+          .then(({ error }) => {
+            expect(error.text).to.equal("User already registered");
+          });
+      });
+    });
     describe("/:username", () => {
       describe("GET", () => {
         it("GET returns status 200 with a JSON object", () => {
@@ -117,6 +149,9 @@ describe("/api", () => {
               expect(error.text).to.equal("User not found");
             });
         });
+      });
+      describe("", () => {
+        it("", () => {});
       });
     });
   });
