@@ -9,9 +9,23 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/topics": {
+    "description": "creates a new topic",
+    "exampleRequest": {
+      "author": "grumpy19",
+      "slug": "music",
+      "description": "let's talk about music!"
+    },
+    "exampleResponse": {
+      "topic": {
+        "slug": "music",
+        "description": "let's talk about music!"
+      }
+    }
+  },
   "GET /api/articles": {
     "description": "serves an array of all articles",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": ["author", "topic", "sort_by", "order", "p", "limit"],
     "exampleResponse": {
       "articles": [
         {
@@ -19,20 +33,44 @@
           "topic": "cooking",
           "author": "weegembump",
           "body": "Text from the article..",
-          "created_at": 1527695953341
+          "created_at": "2017-11-20T08:58:48.322Z"
         }
       ]
+    }
+  },
+  "POST /api/articles": {
+    "description": "creates a new article",
+    "exampleRequest": {
+      "username": "grumpy19",
+      "title": "article title",
+      "topic": "cooking",
+      "body": "Text for the article.."
+    },
+    "exampleResponse": {
+      "article": {
+        "article_id": 44,
+        "title": "article title",
+        "body": "Text for the article...",
+        "votes": 0,
+        "topic": "cooking",
+        "author": "grumpy19",
+        "created_at": "2017-11-20T08:58:48.322Z",
+        "comment_count": 0
+      }
     }
   },
   "GET /api/articles/:article_id": {
     "description": "serves an object containing a single article",
     "exampleResponse": {
       "article": {
+        "article_id": 1,
         "title": "Seafood substitutions are increasing",
         "topic": "cooking",
+        "votes": 0,
         "author": "weegembump",
         "body": "Text from the article..",
-        "created_at": 1527695953341
+        "created_at": "2017-11-20T08:58:48.322Z",
+        "comment_count": 1
       }
     }
   },
@@ -45,29 +83,32 @@
         "topic": "cooking",
         "author": "weegembump",
         "body": "Text from the article..",
-        "created_at": 1527695953341
+        "created_at": "2017-11-20T08:58:48.322Z"
       }
     }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes the given article"
   },
   "POST /api/articles/:article_id/comments": {
     "description": "posts a new comment on a particular article",
     "exampleRequest": {
       "username": "grumpy19",
       "body": "Text for the comment.."
-    }
-  },
-  "exampleResponse": {
-    "comment": {
-      "comment_id": 44,
-      "votes": 4,
-      "created_at": "2017-11-20T08:58:48.322Z",
-      "author": "grumpy19",
-      "body": "Text for the comment..."
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 44,
+        "votes": 4,
+        "created_at": "2017-11-20T08:58:48.322Z",
+        "author": "grumpy19",
+        "body": "Text for the comment..."
+      }
     }
   },
   "GET /api/articles/:article_id/comments": {
     "description": "serves up an array of comments made on a particular article",
-    "queries": ["sort_by", "queries"],
+    "queries": ["sort_by", "order", "p", "limit"],
     "exampleResponse": {
       "comments": [
         {
@@ -97,5 +138,50 @@
   },
   "DELETE /api/comments/:comment_id": {
     "description": "deletes the given comment"
+  },
+  "GET /api/users": {
+    "description": "serves up a list of all users",
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "tickle122",
+          "avatar_url": "https://www.spiritsurfers.net/monastery/wp-content/uploads/_41500270_mrtickle.jpg",
+          "name": "Tom Tickle"
+        },
+        {
+          "username": "grumpy19",
+          "avatar_url": "https://www.tumbit.com/profile-image/4/original/mr-grumpy.jpg",
+          "name": "Paul Grump"
+        }
+      ]
+    }
+  },
+  "POST /api/users": {
+    "description": "creates a new user",
+    "exampleRequest": {
+      "username": "mrmann",
+      "name": "Brian Joseph Mann",
+      "avatar_url": "https://www.spiritsurfers.net/monastery/wp-content/uploads/_41500270_mrtickle.jpg"
+    },
+    "exampleResponse": {
+      "user": {
+        "username": "mrmann",
+        "avatar_url": "https://www.spiritsurfers.net/monastery/wp-content/uploads/_41500270_mrtickle.jpg",
+        "name": "Brian Joseph Mann"
+      }
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "serves up a particular user",
+    "exampleResponse": {
+      "user": {
+        "username": "tickle122",
+        "avatar_url": "https://www.spiritsurfers.net/monastery/wp-content/uploads/_41500270_mrtickle.jpg",
+        "name": "Tom Tickle"
+      }
+    }
+  },
+  "DELETE /api/users/:username": {
+    "description": "deletes a particular user"
   }
 }
