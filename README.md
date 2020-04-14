@@ -13,19 +13,18 @@ Features the following endpoints:
 #### /api/topics
 
 - GET a list of topics
-
-#### /api/users/:username
-
-- GET information about a particular user
+- POST a new topic
 
 #### /api/articles
 
 - GET a list of all posted articles, which can be sorted by date, topic, votes, title, article_id and author
+- POST a new article
 
 #### /api/articles/:article_id
 
 - GET information about a particular article, including its body
 - PATCH in order to vote a particular article up or down
+- DELETE an article
 
 #### /api/articles/:article_id/comments
 
@@ -36,6 +35,16 @@ Features the following endpoints:
 
 - PATCH in order to vote a particular article up or down
 - DELETE a comment
+
+#### /api/users
+
+- GET a list of all users
+- POST a new user
+
+#### /api/users/:username
+
+- GET information about a particular user
+- DELETE a particular user
 
 ## Getting Started
 
