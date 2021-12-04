@@ -35,7 +35,7 @@ describe("/api", () => {
           .then(({ body }) => {
             expect(body).to.have.key("topics");
             expect(body.topics).to.be.an("array");
-            body.topics.forEach(topic => {
+            body.topics.forEach((topic) => {
               expect(topic).to.be.an("object");
               expect(topic).to.have.keys("slug", "description");
             });
@@ -49,7 +49,7 @@ describe("/api", () => {
           .send({
             author: "rogersop",
             slug: "defenestration",
-            description: "articles about chucking stuff out of windows"
+            description: "articles about chucking stuff out of windows",
           })
           .then(({ body }) => {
             expect(body).to.be.an("object");
@@ -58,7 +58,7 @@ describe("/api", () => {
       });
     });
   });
-  describe.only("/users", () => {
+  describe("/users", () => {
     describe("GET", () => {
       it("GET returns an array of users", () => {
         return request(app)
@@ -66,7 +66,7 @@ describe("/api", () => {
           .expect(200)
           .then(({ body }) => {
             expect(body.users).to.be.an("array");
-            body.users.forEach(user => {
+            body.users.forEach((user) => {
               expect(user).to.be.an("object");
               expect(user).to.have.keys("username", "avatar_url", "name");
             });
@@ -112,7 +112,7 @@ describe("/api", () => {
             .get("/api/users/lurker")
             .expect(200)
             .expect("Content-type", "application/json; charset=utf-8")
-            .then(body => {
+            .then((body) => {
               expect(body).to.be.an("object");
             });
         });
@@ -145,7 +145,7 @@ describe("/api", () => {
           return request(app)
             .delete("/api/users/mrmanager")
             .expect(404)
-            .then(error => {
+            .then((error) => {
               expect(error.text).to.equal("User not found");
             });
         });
@@ -170,7 +170,7 @@ describe("/api", () => {
         return request(app)
           .get("/api/articles")
           .then(({ body }) => {
-            body.articles.forEach(article => {
+            body.articles.forEach((article) => {
               expect(article).to.have.keys(
                 "author",
                 "title",
@@ -239,7 +239,7 @@ describe("/api", () => {
         return request(app)
           .get("/api/articles?topic=mitch")
           .then(({ body }) => {
-            body.articles.forEach(article => {
+            body.articles.forEach((article) => {
               expect(article.topic).to.equal("mitch");
             });
           });
@@ -263,7 +263,7 @@ describe("/api", () => {
         return request(app)
           .get("/api/articles?author=icellusedkars")
           .then(({ body }) => {
-            body.articles.forEach(article => {
+            body.articles.forEach((article) => {
               expect(article.author).to.equal("icellusedkars");
             });
           });
@@ -292,7 +292,7 @@ describe("/api", () => {
             author: "rogersop",
             topic: "cats",
             title: "What a movie",
-            body: "I feel bad for Tom Hooper"
+            body: "I feel bad for Tom Hooper",
           })
           .then(({ body }) => {
             expect(body.article).to.have.keys(
@@ -435,7 +435,7 @@ describe("/api", () => {
           return request(app)
             .get("/api/articles/1/comments")
             .then(({ body }) => {
-              body.comments.forEach(comment => {
+              body.comments.forEach((comment) => {
                 expect(comment).to.be.an("object");
                 expect(comment).to.have.keys(
                   "comment_id",
@@ -520,7 +520,7 @@ describe("/api", () => {
             .post("/api/articles/1/comments")
             .send({
               username: "butter_bridge",
-              body: "I don't have a great deal to say on this topic"
+              body: "I don't have a great deal to say on this topic",
             })
             .expect(201)
             .expect("Content-type", "application/json; charset=utf-8")
@@ -533,7 +533,7 @@ describe("/api", () => {
             .post("/api/articles/1/comments")
             .send({
               username: "butter_bridge",
-              body: "Test comment"
+              body: "Test comment",
             })
             .then(({ body }) => {
               expect(body.comment).to.have.keys(
@@ -552,7 +552,7 @@ describe("/api", () => {
             .post("/api/articles/32414/comments")
             .send({
               username: "butter_bridge",
-              body: "Test comment"
+              body: "Test comment",
             })
             .expect(404)
             .then(({ error }) => {
@@ -564,7 +564,7 @@ describe("/api", () => {
             .post("/api/articles/1/comments")
             .send({
               scribe: "butter_bridge",
-              bodaaaaaay: "Test comment"
+              bodaaaaaay: "Test comment",
             })
             .expect(400)
             .then(({ error }) => {
@@ -576,7 +576,7 @@ describe("/api", () => {
             .post("/api/articles/1/comments")
             .send({
               username: "mr_f",
-              body: "Suspicious comment"
+              body: "Suspicious comment",
             })
             .expect(401)
             .then(({ error }) => {
